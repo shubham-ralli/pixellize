@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixellize - AI-Powered Creative Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f6f6fe',
+                            100: '#e7e7fe',
+                            200: '#d4d3fd',
+                            300: '#b6b2fb',
+                            400: '#9288f8',
+                            500: '#754ffe',
+                            600: '#6436f2',
+                            700: '#5525de',
+                            800: '#471fba',
+                            900: '#3c1d99',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #6436f2 0%, #754ffe 100%);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .blog-card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+        .category-pill.active {
+            background-color: #754ffe;
+            color: white;
+        }
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .mobile-menu {
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateY(0);
+        }
+        .tool-hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo and Mobile Menu Button -->
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 mr-4">
+                        <i class="fas fa-bars text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                    <a href="#" class="text-2xl font-bold text-primary-600 dark:text-primary-400">Pixellize</a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Home</a>
+                    <a href="#tools" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Tools</a>
+                    <a href="#pricing" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Pricing</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Resources</a>
+                    <a href="#blogs" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Blog</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Contact</a>
+                </nav>
+
+                <!-- CTA Buttons -->
+                <div class="flex items-center space-x-4">
+                    <button class="hidden md:inline-block text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Login</button>
+                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors shadow-md">Sign Up</button>
+                    <button id="theme-toggle" class="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="mobile-menu-toggle" class="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                        <i class="fas fa-ellipsis-v text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">Home</a>
+                    <a href="#tools" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">Tools</a>
+                    <a href="#pricing" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">Pricing</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">Resources</a>
+                    <a href="#blogs" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">Blog</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">Contact</a>
+                    <button class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2 text-left">Login</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div id="sidebar-overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-50"></div>
+    <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 shadow-xl z-50 overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-primary-600 dark:text-primary-400">Pixellize</h2>
+                <button id="sidebar-close" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                    <i class="fas fa-times text-gray-600 dark:text-gray-300"></i>
+                </button>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-lg font-bold mb-4">New Tools</h3>
+                <div class="space-y-4">
+                    <a href="#" class="block p-4 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
+                        <h4 class="font-bold text-primary-700 dark:text-primary-300">AI Image Upscaler</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Enhance image resolution with AI-powered upscaling technology</p>
+                    </a>
+                    <a href="#" class="block p-4 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
+                        <h4 class="font-bold text-primary-700 dark:text-primary-300">Video Background Remover</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Remove backgrounds from videos automatically with AI</p>
+                    </a>
+                    <a href="#" class="block p-4 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
+                        <h4 class="font-bold text-primary-700 dark:text-primary-300">AI Voice Cloning</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Generate realistic voiceovers using AI voice cloning technology</p>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                <ul class="space-y-3">
+                    <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">All Tools</a></li>
+                    <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Popular Tools</a></li>
+                    <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">AI Tools</a></li>
+                    <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Image Tools</a></li>
+                    <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">PDF Tools</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="py-16 md:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">Transform Your Creative Workflow with <span class="text-primary-600 dark:text-primary-400">AI</span></h1>
+                    <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-lg">Pixellize provides cutting-edge AI tools to streamline your creative process, enhance productivity, and bring your ideas to life faster than ever before.</p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-lg">Get Started</button>
+                        <button class="border border-primary-600 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 px-6 py-3 rounded-lg font-medium transition-colors">View Tools</button>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative w-full max-w-lg">
+                        <div class="gradient-bg rounded-2xl p-8 shadow-xl">
+                            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+                                <div class="flex space-x-4 mb-4">
+                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="h-4 bg-gradient-to-r from-primary-400 to-primary-600 rounded-full"></div>
+                                    <div class="h-4 bg-gradient-to-r from-primary-300 to-primary-500 rounded-full w-3/4"></div>
+                                    <div class="h-4 bg-gradient-to-r from-primary-200 to-primary-400 rounded-full w-1/2"></div>
+                                </div>
+                                <div class="mt-6 grid grid-cols-3 gap-4">
+                                    <div class="h-20 bg-gradient-to-br from-primary-100 to-primary-300 dark:from-primary-800 dark:to-primary-600 rounded-lg"></div>
+                                    <div class="h-20 bg-gradient-to-br from-primary-200 to-primary-400 dark:from-primary-700 dark:to-primary-500 rounded-lg"></div>
+                                    <div class="h-20 bg-gradient-to-br from-primary-300 to-primary-500 dark:from-primary-600 dark:to-primary-400 rounded-lg"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="py-16 bg-gray-50 dark:bg-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-4">Free Online Tools – All in One Place</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Your go-to collection of free tools for editing images, managing PDFs, checking SEO, formatting text, and so much more.</p>
+            </div>
+
+            <!-- Search and Category Filter -->
+            <div class="mb-12">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <!-- Search Bar -->
+                    <div class="relative w-full md:w-1/3">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="search-tools" class="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Search tools...">
+                    </div>
+                    
+                    <!-- Category Pills -->
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button data-category="all" class="category-pill active px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200 text-sm font-medium transition-colors">All</button>
+                        <button data-category="image" class="category-pill px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Images</button>
+                        <button data-category="pdf" class="category-pill px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">PDF</button>
+                        <button data-category="ai" class="category-pill px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">AI</button>
+                        <button data-category="other" class="category-pill px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Other</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tool 1 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="ai seo">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-heading text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Meta Title Generator</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Create compelling meta titles that boost SEO and click-through rates with AI-powered suggestions.</p>
+                </a>
+                
+                <!-- Tool 2 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="other">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-code text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">HTML Minifier</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Optimize your website performance by automatically minifying HTML code without losing functionality.</p>
+                </a>
+                
+                <!-- Tool 3 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="image">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-image text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Image Compressor</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Reduce image file sizes by up to 80% while maintaining visual quality with our intelligent compression.</p>
+                </a>
+                
+                <!-- Tool 4 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="other">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-palette text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Color Palette Generator</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Generate harmonious color schemes for your projects based on your brand colors or preferences.</p>
+                </a>
+                
+                <!-- Tool 5 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="other">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-font text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Font Pairing Tool</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Discover perfect font combinations that enhance readability and visual appeal for your designs.</p>
+                </a>
+                
+                <!-- Tool 6 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="ai">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-cube text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">3D Model Generator</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Transform 2D images into 3D models with our advanced AI algorithms for immersive experiences.</p>
+                </a>
+                
+                <!-- Tool 7 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="pdf">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-file-pdf text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">PDF to Word Converter</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Convert PDF documents to editable Word files while preserving formatting and layout.</p>
+                </a>
+                
+                <!-- Tool 8 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="pdf image">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-file-image text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Image to PDF Converter</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Convert multiple images into a single PDF document with customizable page sizes and orientations.</p>
+                </a>
+                
+                <!-- Tool 9 -->
+                <a href="#" class="tool-card block bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700" data-categories="pdf">
+                    <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-file-alt text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">PDF Compressor</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Reduce PDF file sizes without compromising quality for faster sharing and uploading.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why Choose Pixellize?</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Our platform is designed with creators in mind, offering powerful features that streamline your workflow.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white dark:bg-gray-900 p-8 rounded-xl shadow-md border border-gray-100 dark:border-gray-800">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-bolt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Lightning Fast</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Process complex tasks in seconds with our optimized AI algorithms that work at incredible speeds.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white dark:bg-gray-900 p-8 rounded-xl shadow-md border border-gray-100 dark:border-gray-800">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Secure & Private</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Your data is protected with enterprise-grade security and we never store or share your files.</p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white dark:bg-gray-900 p-8 rounded-xl shadow-md border border-gray-100 dark:border-gray-800">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-sync-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Continuous Updates</h3>
+                    <p class="text-gray-600 dark:text-gray-400">We regularly add new features and improvements based on user feedback and technological advances.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Blogs Section -->
+    <section id="blogs" class="py-16 bg-gray-50 dark:bg-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Latest Blogs</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Stay updated with the latest trends, tips, and insights in AI-powered creative tools.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Blog 1 -->
+                <div class="blog-card bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="h-48 bg-gradient-to-r from-primary-400 to-primary-600 flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-5xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                            <span class="mr-4">March 15, 2023</span>
+                            <span>5 min read</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">How AI is Revolutionizing Creative Workflows</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Discover how artificial intelligence is transforming the way designers, developers, and creators work.</p>
+                        <a href="#" class="text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors inline-flex items-center">
+                            Read More
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Blog 2 -->
+                <div class="blog-card bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="h-48 bg-gradient-to-r from-primary-500 to-primary-700 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-5xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                            <span class="mr-4">March 10, 2023</span>
+                            <span>7 min read</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Top 10 SEO Tools to Boost Your Website Ranking</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Explore the most effective SEO tools that can help improve your website's visibility and search rankings.</p>
+                        <a href="#" class="text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors inline-flex items-center">
+                            Read More
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Blog 3 -->
+                <div class="blog-card bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="h-48 bg-gradient-to-r from-primary-600 to-primary-800 flex items-center justify-center">
+                        <i class="fas fa-image text-white text-5xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                            <span class="mr-4">March 5, 2023</span>
+                            <span>4 min read</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Image Optimization Techniques for Faster Websites</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Learn the best practices for optimizing images to improve website performance and user experience.</p>
+                        <a href="#" class="text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors inline-flex items-center">
+                            Read More
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- View All Blogs Button -->
+            <div class="text-center mt-12">
+                <a href="#" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-md">
+                    View All Blogs
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">What Our Users Say</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Join thousands of satisfied creators who have transformed their workflow with Pixellize.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold mr-4">SJ</div>
+                        <div>
+                            <h4 class="font-bold">Sarah Johnson</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Graphic Designer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 italic">"Pixellize has completely transformed my design workflow. The AI tools save me hours each week, allowing me to focus on creativity rather than repetitive tasks."</p>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold mr-4">MR</div>
+                        <div>
+                            <h4 class="font-bold">Michael Rodriguez</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Web Developer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 italic">"As a developer, the HTML minifier and image compressor have been game-changers for optimizing site performance. My pages load 40% faster now!"</p>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold mr-4">ET</div>
+                        <div>
+                            <h4 class="font-bold">Emily Thompson</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Content Creator</h4>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 italic">"The meta title generator has boosted my SEO rankings significantly. I'm getting more organic traffic than ever before. Highly recommend Pixellize!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Find answers to common questions about Pixellize and our AI tools.</p>
+            </div>
+            <div class="max-w-3xl mx-auto">
+                <div class="space-y-6">
+                    <!-- FAQ 1 -->
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2">How does the AI technology work?</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Our AI models are trained on millions of data points to understand patterns and generate optimal outputs for creative tasks. The technology continuously improves as it processes more data.</p>
+                    </div>
+                    
+                    <!-- FAQ 2 -->
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Is my data secure with Pixellize?</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Absolutely. We employ enterprise-grade security measures including encryption, secure data transmission, and strict privacy policies. We never store or share your personal data.</p>
+                    </div>
+                    
+                    <!-- FAQ 3 -->
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Can I cancel my subscription anytime?</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Yes, you can cancel your subscription at any time. If you cancel, you'll continue to have access to your paid plan until the end of your billing cycle.</p>
+                    </div>
+                    
+                    <!-- FAQ 4 -->
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Do you offer team or enterprise plans?</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Yes, we offer custom plans for teams and enterprises with additional features like user management, advanced analytics, and dedicated support. Contact our sales team for details.</p>
+                    </div>
+                    
+                    <!-- FAQ 5 -->
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2">What file formats are supported?</h3>
+                        <p class="text-gray-600 dark:text-gray-400">We support all major file formats including JPG, PNG, GIF, SVG, MP4, HTML, CSS, and more. If you have specific format requirements, contact our support team.</p>
+                    </div>
+                    
+                    <!-- FAQ 6 -->
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2">How often are new tools added?</h3>
+                        <p class="text-gray-600 dark:text-gray-400">We release new tools and features monthly based on user feedback and technological advancements. Premium users get early access to beta features.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/30 dark:to-primary-800/30 p-8 md:p-12 rounded-2xl shadow-md">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Stay Updated</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">Subscribe to our newsletter to receive updates on new tools, features, and creative tips.</p>
+                <div class="flex flex-col sm:flex-row max-w-md mx-auto">
+                    <input type="email" placeholder="Your email address" class="flex-grow px-4 py-3 rounded-l-lg sm:rounded-r-none rounded-r-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent mb-2 sm:mb-0">
+                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-r-lg sm:rounded-l-none rounded-l-lg font-medium transition-colors shadow-md">Subscribe</button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">We respect your privacy. Unsubscribe at any time.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-1">
+                    <h3 class="text-2xl font-bold mb-4">Pixellize</h3>
+                    <p class="text-gray-400 mb-4">AI-powered creative tools to enhance your workflow and boost productivity.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Product</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Tools</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Updates</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Community</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 Pixellize. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // Check for saved theme preference or respect OS preference
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            // Toggle theme
+            document.documentElement.classList.toggle('dark');
+            
+            // Update icon
+            if (document.documentElement.classList.contains('dark')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('color-theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('color-theme', 'light');
+            }
+        });
+
+        // Sidebar functionality
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+        
+        sidebarToggle.addEventListener('click', openSidebar);
+        sidebarClose.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Mobile menu functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('open');
+        }
+        
+        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+
+        // Category filter functionality
+        const categoryPills = document.querySelectorAll('.category-pill');
+        const toolCards = document.querySelectorAll('.tool-card');
+        
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', function() {
+                // Remove active class from all pills
+                categoryPills.forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked pill
+                this.classList.add('active');
+                
+                // Get the category to filter by
+                const category = this.getAttribute('data-category');
+                
+                // Show/hide tools based on category
+                toolCards.forEach(card => {
+                    if (category === 'all') {
+                        card.classList.remove('tool-hidden');
+                    } else {
+                        const cardCategories = card.getAttribute('data-categories');
+                        if (cardCategories && cardCategories.includes(category)) {
+                            card.classList.remove('tool-hidden');
+                        } else {
+                            card.classList.add('tool-hidden');
+                        }
+                    }
+                });
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('search-tools');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            toolCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.classList.remove('tool-hidden');
+                } else {
+                    card.classList.add('tool-hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
